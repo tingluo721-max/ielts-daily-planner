@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雅思7.0 · 每日打卡</title>
+<style>
+
+  :root { --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8; --done: #4ade80; --border: #334155; --amber: #fbbf24; --purple: #a78bfa; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:20px; }
+  .container { max-width:960px; margin:0 auto; }
+  header { text-align:center; margin-bottom:18px; }
+  header h1 { font-size:1.4rem; }
+  header p { color:var(--muted); font-size:0.8rem; margin-top:4px; }
+  .progress-bar { width:100%; height:5px; background:var(--border); border-radius:3px; margin:10px 0 14px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--done)); border-radius:3px; transition:width .4s; }
+  .stats { display:flex; gap:10px; justify-content:center; margin-bottom:14px; flex-wrap:wrap; }
+  .stat { background:var(--card); border-radius:8px; padding:8px 14px; text-align:center; }
+  .stat .num { font-size:1.2rem; font-weight:700; }
+  .stat .label { font-size:0.65rem; color:var(--muted); }
+  .nav { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:18px; }
+  .nav button { background:var(--card); border:1px solid var(--border); color:var(--text); padding:6px 10px; border-radius:6px; cursor:pointer; font-size:0.8rem; }
+  .nav button:hover { border-color:var(--accent); }
+  .nav .date-display { font-weight:600; min-width:140px; text-align:center; font-size:0.9rem; }
+  .phase-tag { font-size:0.68rem; padding:2px 8px; border-radius:8px; background:rgba(56,189,248,.1); color:var(--accent); }
+  .day-sections { display:flex; flex-direction:column; gap:12px; }
+  .section { background:var(--card); border-radius:10px; overflow:hidden; border:1px solid var(--border); }
+  .section-header { display:flex; align-items:center; gap:8px; padding:12px 16px; cursor:pointer; user-select:none; }
+  .section-header:hover { background:rgba(255,255,255,.02); }
+  .section-icon { width:30px; height:30px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+  .section-title { font-weight:700; font-size:0.9rem; }
+  .section-time { color:var(--muted); font-size:0.75rem; margin-left:auto; }
+  .section-arrow { color:var(--muted); font-size:0.65rem; transition:transform .2s; }
+  .section.open .section-arrow { transform:rotate(90deg); }
+  .section-body { display:none; padding:0 16px 14px; }
+  .section.open .section-body { display:block; }
+  .material-box { background:rgba(0,0,0,.2); border-radius:8px; padding:12px; margin-bottom:10px; }
+  .material-box h4 { font-size:0.8rem; margin-bottom:6px; color:var(--accent); }
+  .material-box p, .material-box li { font-size:0.82rem; line-height:1.5; color:var(--muted); }
+  .material-box a { color:var(--accent); }
+  .cue-card { background:rgba(167,139,250,.06); border:1px solid rgba(167,139,250,.15); border-radius:8px; padding:12px; margin-bottom:8px; }
+  .cue-card .card-title { font-weight:600; color:var(--purple); font-size:0.82rem; margin-bottom:6px; }
+  .cue-card .card-prompt { font-size:0.86rem; line-height:1.45; white-space:pre-line; }
+  .cue-card .card-hints { font-size:0.75rem; color:var(--muted); margin-top:4px; }
+  .writing-prompt { background:rgba(251,191,36,.05); border:1px solid rgba(251,191,36,.12); border-radius:8px; padding:12px; margin-bottom:8px; }
+  .writing-prompt h4 { color:var(--amber); font-size:0.82rem; }
+  .reading-box { background:rgba(0,0,0,.2); border-radius:8px; padding:14px; max-height:300px; overflow-y:auto; font-family:Georgia,serif; font-size:0.85rem; line-height:1.65; color:#cbd5e1; white-space:pre-line; }
+  .video-wrap { position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:8px; margin:8px 0; }
+  .video-wrap iframe { position:absolute; top:0; left:0; width:100%; height:100%; border:0; }
+  .vocab-list { display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; }
+  .vocab-word { background:rgba(255,255,255,.05); border-radius:5px; padding:3px 8px; font-size:0.78rem; }
+  .vocab-word .cn { color:var(--muted); margin-left:3px; }
+  .check-row { display:flex; align-items:center; gap:7px; padding:5px 0; cursor:pointer; }
+  .checkbox { width:18px; height:18px; min-width:18px; border:2px solid var(--border); border-radius:4px; display:flex; align-items:center; justify-content:center; transition:all .2s; }
+  .checkbox.done { background:var(--done); border-color:var(--done); }
+  .checkbox.done::after { content:'✓'; font-size:10px; color:#000; font-weight:700; }
+  .check-label { font-size:0.82rem; }
+  .check-label.done-text { text-decoration:line-through; color:var(--muted); }
+  .btn-sm { background:transparent; border:1px solid var(--border); color:var(--amber); padding:4px 10px; border-radius:5px; cursor:pointer; font-size:0.75rem; margin-top:6px; display:inline-block; }
+  .btn-sm:hover { border-color:var(--amber); }
+  .hide { display:none; }
+  .show { display:block; }
+  .motivation { text-align:center; color:var(--accent); font-size:0.85rem; margin-top:14px; font-weight:500; }
+  .footer { text-align:center; margin-top:18px; padding-bottom:24px; }
+  .btn-reset { background:transparent; border:1px solid var(--border); color:var(--muted); padding:5px 12px; border-radius:6px; cursor:pointer; font-size:0.75rem; }
+  .btn-reset:hover { color:#f87171; border-color:#f87171; }
+
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🎯 雅思 7.0 · 每日打卡</h1>
+    <p>2026-07-05 起 · 8周冲刺 · 目标 7.0 · <span id="phaseTag" class="phase-tag"></span></p>
+    <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width:0%"></div></div>
+  </header>
+  <div class="stats">
+    <div class="stat"><div class="num" id="statDay">1</div><div class="label">天数</div></div>
+    <div class="stat"><div class="num" id="statDone">0</div><div class="label">今日完成</div></div>
+    <div class="stat"><div class="num" id="statStreak">0</div><div class="label">连续打卡</div></div>
+  </div>
+  <div class="nav">
+    <button onclick="changeDay(-1)">◀ 前一天</button>
+    <span class="date-display" id="dateDisplay"></span>
+    <button onclick="changeDay(1)">后一天 ▶</button>
+    <button onclick="goToday()" style="font-size:0.73rem">今天</button>
+  </div>
+  <div class="day-sections" id="daySections"></div>
+  <div class="motivation" id="motivation"></div>
+  <div class="footer"><button class="btn-reset" onclick="resetAll()">重置全部打卡</button></div>
+</div>
+
+<script>
+const DAYS_DATA = 
+[
+  {
+    "phase": "第一阶段·唤醒期 (Day 1-8)",
+    "title": "Day 1 · 打开耳朵",
+    "listen": {
+      "video_title": "Why we forget things",
+      "video_url": "https://www.youtube.com/embed/5i5Hwy4Lh4Q",
+      "task": "专注抓大意，写下 5 个生词",
+      "extra": "每日三遍法：①裸听抓大意 ②开字幕对照 ③关字幕跟读"
+    },
+    "speak": {
+      "part1_topic": "Work or Study",
+      "part1_questions": "Do you work or are you a student? | Why did you choose it? | What do you like most about it?",
+      "daily_task": "录30秒自我介绍并改进"
+    },
+    "write": {
+      "type": "精读 Simon 范文",
+      "prompt": "Governments & railways vs roads",
+      "link": "https://ielts-simon.com/ielts-help-and-english-pr/2013/06/ielts-writing-task-2-government-spending-essay.html",
+      "focus": "标注 thesis statement + 每段 topic sentence"
+    },
+    "read": {
+      "title": "The History of Glass",
+      "passage": "From our earliest origins, humans have used natural glass, such as obsidian — a volcanic glass — for tools and weapons. The earliest known man-made glass dates back to around 3500 BC, in Mesopotamia... Today, glass is a high-tech material used in fiber optics, smartphone screens, and solar panels."
+    },
+    "vocab": {
+      "new_words": 50,
+      "words_of_day": "approach,significant,decline,proportion,sufficient,contribute,consequence,nevertheless,inevitable,controversial",
+      "note": "雅思核心词书 · 扇贝自动推送复习"
+    }
+  },
+  {
+    "phase": "第一阶段·唤醒期 (Day 1-8)",
+    "title": "Day 2 · 耳朵脱敏",
+    "listen": {
+      "video_title": "The smell of coffee",
+      "video_url": "https://www.youtube.com/embed/5hD74pkr_Hk",
+      "task": "关注数字和百分比，口头英文总结30秒",
+      "extra": "每日三遍法：①裸听抓大意 ②开字幕对照 ③关字幕跟读"
+    },
+    "speak": {
+      "part1_topic": "Hometown",
+      "part1_questions": "Where is your hometown? | What do you like about it? | Has it changed much?",
+      "daily_task": "跟读BBC模仿语音语调"
+    },
+    "write": {
+      "type": "精读 Simon 范文",
+      "prompt": "Ageing population problems & solutions",
+      "link": "https://ielts-simon.com/ielts-help-and-english-pr/2014/01/ielts-writing-task-2-ageing-population-essay.html",
+      "focus": "标注 Problem→Solution 结构"
+    },
+    "read": {
+      "title": "The Power of Habit",
+      "passage": "In 1992, an elderly man named Eugene Pauly walked into a laboratory. Eugene had suffered brain damage from viral encephalitis, and he could no longer form new memories... The habit loop consists of three parts: a cue, a routine, and a reward."
+    },
+    "vocab": {
+      "new_words": 50,
+      "words_of_day": "deteriorate,predominantly,sophisticated,substantial,simultaneously,conscientious,exacerbate,ubiquitous,paradigm,prerequisite",
+      "note": "雅思核心词书 · 扇贝自动推送复习"
+    }
+  },
+  {
+    "phase": "第一阶段·唤醒期 (Day 1-8)",
+    "title": "Day 3 · 听口结合",
+    "listen": {
+      "video_title": "Is technology harmful to youngsters?",
+      "video_url": "https://www.youtube.com/embed/5eGYDZ3gWl8",
+      "task": "逐句跟读，模仿语调",
+      "extra": "每日三遍法：①裸听抓大意 ②开字幕对照 ③关字幕跟读"
+    },
+    "speak": {
+      "part1_topic": "Hobbies & Free Time",
+      "part1_questions": "What do you do in free time? | Indoor or outdoor? | A hobby you'd like to try?",
+      "daily_task": "用Answer→Reason→Example公式扩展每个回答"
+    },
+    "write": {
+      "type": "抄写范文开头段",
+      "prompt": "选一篇 Task 2 范文抄写开头段",
+      "link": "",
+      "focus": "一句句分析：背景句→改写题目→立场句"
+    },
+    "read": {
+      "title": "Why Cities Make Us Smarter",
+      "passage": "Urban planners have long known that cities are engines of innovation. When people live in close proximity, ideas spread faster... The density of cities — often seen as a problem — may actually be their greatest asset."
+    },
+    "vocab": {
+      "new_words": 50,
+      "words_of_day": "detrimental,extrapolate,disproportionate,hypothetically,inevitable,consequently,furthermore,conversely,whereas,notwithstanding",
+      "note": "雅思核心词书 · 扇贝自动推送复习"
+    }
+  },
+  {
+    "phase": "第一阶段·唤醒期 (Day 1-8)",
+    "title": "Day 4 · 精听入门",
+    "listen": {
+      "video_title": "The power of crying",
+      "video_url": "https://www.youtube.com/embed/7G9IX0TQrYI",
+      "task": "精听+听写段落",
+      "extra": "每日三遍法：①裸听抓大意 ②开字幕对照 ③关字幕跟读"
+    },
+    "speak": {
+      "part1_topic": "Food & Cooking",
+      "part1_questions": "What food do you like? | Do you cook? Why? | Has your taste changed?",
+      "daily_task": "对着镜子说3个话题看表情"
+    },
+    "write": {
+      "type": "抄写范文主体段",
+      "prompt": "选一篇 Task 2 范文抄写主体段",
+      "link": "",
+      "focus": "分析：Topic sentence→解释→例子→小结"
+    },
+    "read": {
+      "title": "The Science of Sleep",
+      "passage": "Sleep was once considered a passive state, but we now know it is a highly active process. During sleep, the brain consolidates memories, clears out toxins, and repairs neural connections... REM sleep in particular is crucial for emotional regulation."
+    },
+    "vocab": {
+      "new_words": 50,
+      "words_of_day": "ambiguous,comprise,denote,explicit,fluctuate,hence,ideology,justify,whereby,thereby",
+      "note": "雅思核心词书 · 扇贝自动推送复习"
+    }
+  },
+  {
+    "phase": "第一阶段·唤醒期 (Day 1-8)",
+    "title": "Day 5 · 速听挑战",
+    "listen": {
+      "video_title": "Why do we procrastinate?",
+      "video_url": "https://www.youtube.com/embed/arj7oStGLkU",
+      "task": "抓信号词 however/but/therefore",
+      "extra": "每日三遍法：①裸听抓大意 ②开字幕对照 ③关字幕跟读"
+    },
+    "speak": {
+      "part1_topic": "Daily Routine",
+      "part1_questions": "What time do you get up? | What's your favorite time of day? | Do you want to change your routine?",
+      "daily_task": "录音回听找3个改进点重说"
+    },
+    "write": {
+      "type": "模仿写 Task 2 开头 ×3",
+      "prompt": "任选 3 个题目只写开头段",
+      "link": "",
+      "focus": "每段 3-4 句：hook + paraphrase + thesis"
+    },
+    "read": {
+      "title": "Bilingualism and the Brain",
+      "passage": "For decades, researchers believed that bilingualism confused children and delayed language development. We now know the opposite is true... Bilingual children show enhanced executive function, better attention control, and delayed onset of dementia in old age."
+    },
+    "vocab": {
+      "new_words": 50,
+      "words_of_day": "abstract,attribute,comprehensive,distinction,empirical,fundamental,hierarchy,implicit,mechanism,nonetheless",
+      "note": "雅思核心词书 · 扇贝自动推送复习"
+    }
+  },
+  {
+    "phase": "第一阶段·唤醒期 (Day 1-8)",
+    "title": "Day 6 · 场景辨音",
+    "listen": {
+      "video_title": "Benefits of boredom",
+      "video_url": "https://www.youtube.com/embed/LKPwKFigOEs",
+      "task": "跟读+单词拼写检查",
+      "extra": "每日三遍法：①裸听抓大意 ②开字幕对照 ③关字幕跟读"
+    },
+    "speak": {
+      "part1_topic": "Family & Friends",
+      "part1_questions": "Are you close to your family? | How often do you see friends? | Do you prefer one close friend or many acquaintances?",
+      "daily_task": "Part 2入门：Describe a person准备1分钟说2分钟"
+    },
+    "write": {
+      "type": "精读 Task 1 范文",
+      "prompt": "Simon 线图+柱图各一篇",
+      "link": "https://ielts-simon.com/ielts-help-and-english-pr/2012/10/ielts-writing-task-1-line-graph-essay.html",
+      "focus": "重点：Overview 概述段的写法"
+    },
+    "read": {
+      "title": "The Rise of Fake News",
+      "passage": "Misinformation is not new — propaganda has existed for centuries. But social media has supercharged the spread of false information... The algorithms that power our news feeds prioritize engagement over accuracy."
+    },
+    "vocab": {
+      "new_words": 50,
+      "words_of_day": "accommodation,assessment,bureaucratic,chronic,complement,deviation,equilibrium,feasible,genuine,heterogeneous",
+      "note": "雅思核心词书 · 扇贝自动推送复习"
+    }
+  },
+  {
+    "phase": "第一阶段·唤醒期 (Day 1-8)",
+    "title": "Day 7 · 跟读强化",
+    "listen": {
+      "video_title": "Climate change and evolution",
+      "video_url": "https://www.youtube.com/embed/uXQj6lBuMQ0",
+      "task": "1.25x 速听训练",
+      "extra": "每日三遍法：①裸听抓大意 ②开字幕对照 ③关字幕跟读"
+    },
+    "speak": {
+      "part1_topic": "Travel & Holidays",
+      "part1_questions": "Do you like traveling? | Where did you go on your last holiday? | What's your dream destination?",
+      "daily_task": "Part 1所有话题快速过一遍"
+    },
+    "write": {
+      "type": "模仿写 Task 1 概述 ×3",
+      "prompt": "看 3 张图各写 1 句 overview",
+      "link": "",
+      "focus": "一句话概括总体趋势或主要差异"
+    },
+    "read": {
+      "title": "Vertical Farming",
+      "passage": "By 2050, the world's population is expected to reach 9.7 billion, and feeding everyone will require a 70% increase in food production. One promising solution is vertical farming — growing crops in stacked layers indoors..."
+    },
+    "vocab": {
+      "new_words": 50,
+      "words_of_day": "inclination,indigenous,infrastructure,innovation,intervention,legislation,preliminary,qualitative,refinement,specification",
+      "note": "雅思核心词书 · 扇贝自动推送复习"
+    }
+  },
+  {
+    "phase": "第一阶段·唤醒期 (Day 1-8)",
+    "title": "Day 8 · 听写突破",
+    "listen": {
+      "video_title": "The future of food",
+      "video_url": "https://www.youtube.com/embed/Y7mgGmBfFHI",
+      "task": "英音+美音切换辨听",
+      "extra": "每日三遍法：①裸听抓大意 ②开字幕对照 ③关字幕跟读"
+    },
+    "speak": {
+      "part1_topic": "Music & Entertainment",
+      "part1_questions": "What music do you like? | Do you play an instrument? | Cinema vs streaming at home?",
+      "daily_task": "选一个物品描述2分钟不间断"
+    },
+    "write": {
+      "type": "抄写 Task 1 + Task 2 各一篇",
+      "prompt": "完整抄写两篇范文",
+      "link": "",
+      "focus": "慢写，体会用词和句式"
+    },
+    "read": {
+      "title": "Emotional Intelligence",
+      "passage": "IQ was long considered the best predictor of career success. However, research by psychologist Daniel Goleman suggests that emotional intelligence — the ability to recognize and manage emotions — may matter more..."
+    },
+    "vocab": {
+      "new_words": 50,
+      "words_of_day": "sustainable,transaction,transformation,undergo,utilize,validity,virtual,voluntary,widespread,yield",
+      "note": "雅思核心词书 · 扇贝自动推送复习"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 9 · 题型全接触",
+    "listen": {
+      "video_title": "剑桥雅思11 Test1 Section1+2",
+      "video_url": "",
+      "task": "做题→精听→标注错题类型",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Sports & Exercise",
+      "part1_questions": "Talk about your experience with sports & exercise. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task1 线图练笔",
+      "prompt": "The graph below shows the number of tourists visiting a particular Caribbean island between 2010 and 2017. Summarize and compare.",
+      "link": "",
+      "focus": "20min 限时，必须写 overview"
+    },
+    "read": {
+      "title": "剑桥雅思11 Test1 Passage1",
+      "passage": "限时：限时25min · 重点：T/F/NG精析\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "acquisition,advocate,aggregate,albeit,allocate,analogy,apparatus,arbitrary,attain,coincide",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 10 · 学术听力",
+    "listen": {
+      "video_title": "剑桥雅思11 Test1 Section3+4",
+      "video_url": "",
+      "task": "同上，Section4 学术场景重点精听",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Books & Reading",
+      "part1_questions": "Talk about your experience with books & reading. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task1 柱图练笔",
+      "prompt": "The chart below shows the percentage of adults in four countries who did voluntary work in 2015.",
+      "link": "",
+      "focus": "先写 overview 再写细节"
+    },
+    "read": {
+      "title": "剑桥雅思11 Test1 Passage2",
+      "passage": "限时：限时25min · 重点：Matching headings\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "collapse,commission,commodity,compensate,compile,compliance,conceive,concurrent,confine,consensus",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 11 · 地图方位",
+    "listen": {
+      "video_title": "剑桥雅思11 Test2 Section1+2",
+      "video_url": "",
+      "task": "地图题专项：标记方位词 left/right/opposite/beside",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Weather & Seasons",
+      "part1_questions": "Talk about your experience with weather & seasons. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task1 饼图练笔",
+      "prompt": "The pie charts show the main reasons why students chose a particular university in 2000 and 2020.",
+      "link": "",
+      "focus": "注意时态变化+对比两图"
+    },
+    "read": {
+      "title": "剑桥雅思11 Test1 Passage3",
+      "passage": "限时：限时25min · 重点：选择题+句子完成\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "constitute,constrain,consult,contemplate,contradict,counterpart,crucial,currency,denote,depict",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 12 · 选择干扰项",
+    "listen": {
+      "video_title": "剑桥雅思11 Test2 Section3+4",
+      "video_url": "",
+      "task": "选择题干扰项专项——选项都提到了但只有一个对",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Shopping & Fashion",
+      "part1_questions": "Talk about your experience with shopping & fashion. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task1 表格练笔",
+      "prompt": "The table shows data about underground railway systems in six cities.",
+      "link": "",
+      "focus": "排序类表格：最大值→最小值"
+    },
+    "read": {
+      "title": "剑桥雅思11 Test2 Passage1",
+      "passage": "限时：限时22min · 重点：Summary填空\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "derive,devise,dilemma,diminish,discrete,displace,dynamic,elicit,emerge,empirical",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 13 · 数字与拼写",
+    "listen": {
+      "video_title": "剑桥雅思11 Test3 Section1+2",
+      "video_url": "",
+      "task": "个人信息填空题：名字拼写/数字/日期",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Technology & Internet",
+      "part1_questions": "Talk about your experience with technology & internet. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task2 Opinion",
+      "prompt": "Some people believe that unpaid community service should be a compulsory part of high school. To what extent do you agree or disagree?",
+      "link": "",
+      "focus": "四段式：intro→agree→disagree→conclusion"
+    },
+    "read": {
+      "title": "剑桥雅思11 Test2 Passage2",
+      "passage": "限时：限时22min · 重点：信息定位+匹配\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "encounter,enhance,entity,equate,erode,estate,evident,evolve,exceed,exploit",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 14 · 学术独白",
+    "listen": {
+      "video_title": "剑桥雅思11 Test3 Section3+4",
+      "video_url": "",
+      "task": "学术独白结构分析：introduction→main points→conclusion",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Pets & Animals",
+      "part1_questions": "Talk about your experience with pets & animals. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task2 Discussion",
+      "prompt": "Some people think that governments should ban dangerous sports, while others believe people should be free to choose. Discuss both views and give your opinion.",
+      "link": "",
+      "focus": "平衡讨论+清晰立场"
+    },
+    "read": {
+      "title": "剑桥雅思11 Test2 Passage3",
+      "passage": "限时：限时22min · 重点：Y/N/NG（注意和T/F/NG的区别！）\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "facilitate,factor,finite,fluctuate,format,foundation,framework,function,generate,global",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 15 · 第一次听力模考！",
+    "listen": {
+      "video_title": "剑桥雅思11 Test4 全卷模考",
+      "video_url": "",
+      "task": "第一次 30min 全卷模考！严格计时，不停顿",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Photography & Art",
+      "part1_questions": "Talk about your experience with photography & art. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task2 Problem-Solution",
+      "prompt": "In many countries, the amount of household waste is increasing. What problems does this cause? What can be done?",
+      "link": "",
+      "focus": "Problem段→Solution段"
+    },
+    "read": {
+      "title": "剑桥雅思11 Test3 全三篇",
+      "passage": "限时：60min全真 · 重点：第一次阅读模考！\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "guideline,hierarchy,highlight,identical,illuminate,illustrate,impact,implement,implicit,impose",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 16 · 错题回听日",
+    "listen": {
+      "video_title": "精听复习·错题本回听",
+      "video_url": "",
+      "task": "翻看前 7 天所有错题，只精听错题所在句",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Transport & Traffic",
+      "part1_questions": "Talk about your experience with transport & traffic. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task2 Advantage-Disadvantage",
+      "prompt": "More and more people are choosing to live alone nowadays. Do the advantages outweigh the disadvantages?",
+      "link": "",
+      "focus": "必须明确说哪边更重"
+    },
+    "read": {
+      "title": "错题分析日",
+      "passage": "限时：不限时 · 重点：T/F/NG vs Y/N/NG 专项区分训练\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "incentive,incidence,inclination,incorporate,index,induce,inequality,infrastructure,inhibit,innovation",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 17 · 1.1x速听",
+    "listen": {
+      "video_title": "剑桥雅思12 Test1 Section1+2",
+      "video_url": "",
+      "task": "1.1x 速听，训练快速反应",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Health & Fitness",
+      "part1_questions": "Talk about your experience with health & fitness. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task1 混合图",
+      "prompt": "The diagram shows how rainwater is collected and treated for drinking in an Australian town.",
+      "link": "",
+      "focus": "流程图的时态+被动语态"
+    },
+    "read": {
+      "title": "剑桥雅思12 Test1 Passage1",
+      "passage": "限时：限时22min · 重点：段落信息匹配\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "insight,integral,interact,interpret,interval,intervene,intrinsic,investigate,isolate,justify",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 18 · 多选题攻坚",
+    "listen": {
+      "video_title": "剑桥雅思12 Test1 Section3+4",
+      "video_url": "",
+      "task": "多选题专项：同时看多个选项，预判可能答案",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Education & School",
+      "part1_questions": "Talk about your experience with education & school. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task1 线图+柱图混合",
+      "prompt": "Line graph: CO2 emissions. Bar chart: renewable energy use. Same period.",
+      "link": "",
+      "focus": "双图关联——找到两图之间的关系"
+    },
+    "read": {
+      "title": "剑桥雅思12 Test1 Passage2",
+      "passage": "限时：限时22min · 重点：多选题+Summary\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "layer,levy,liberal,logic,margin,mature,mechanism,mediate,mental,migrate",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 19 · 流程图表格",
+    "listen": {
+      "video_title": "剑桥雅思12 Test2 Section1+2",
+      "video_url": "",
+      "task": "流程图/表格填空：提前读图预判答案词性",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Work & Career",
+      "part1_questions": "Talk about your experience with work & career. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task2 Opinion",
+      "prompt": "Some people say that advertising encourages us to buy things we don't need. To what extent do you agree?",
+      "link": "",
+      "focus": "结合个人经历举例"
+    },
+    "read": {
+      "title": "剑桥雅思12 Test1 Passage3",
+      "passage": "限时：限时22min · 重点：主旨题+态度题\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "minimal,modify,monopoly,motive,network,neutral,nonetheless,notion,objective,obtain",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 20 · 观点态度",
+    "listen": {
+      "video_title": "剑桥雅思12 Test2 Section3+4",
+      "video_url": "",
+      "task": "观点态度题：agree/disagree/has reservation",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Environment & Nature",
+      "part1_questions": "Talk about your experience with environment & nature. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task2 Discussion",
+      "prompt": "Some think that economic growth is the only way to end poverty. Others argue that economic growth damages the environment. Discuss both views.",
+      "link": "",
+      "focus": "典型雅思大作文题"
+    },
+    "read": {
+      "title": "剑桥雅思12 Test2 Passage1",
+      "passage": "限时：限时20min · 重点：提速训练\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "odd,ongoing,option,orient,outcome,overlap,panel,paradigm,parallel,parameter",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 21 · 第二次听力模考",
+    "listen": {
+      "video_title": "剑桥雅思12 Test3 全卷模考",
+      "video_url": "",
+      "task": "第二次全卷模考，对比 Day7 看提分",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Languages & Learning",
+      "part1_questions": "Talk about your experience with languages & learning. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task2 Two-Part",
+      "prompt": "Many people today find it difficult to balance work and personal life. What are the causes? What solutions can you suggest?",
+      "link": "",
+      "focus": "两个问题都要回答完整"
+    },
+    "read": {
+      "title": "剑桥雅思12 Test2 Passage2",
+      "passage": "限时：限时20min · 重点：时间分配实战\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "participate,passive,perceive,period,persist,perspective,phase,phenomenon,policy,portion",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第二阶段·筑基期 (Day 9-22)",
+    "title": "Day 22 · 错题分类+语料库",
+    "listen": {
+      "video_title": "错题归类+王陆语料库Ch3听写",
+      "video_url": "",
+      "task": "分类统计：拼写错误/漏听/干扰项/数字/地图",
+      "extra": "剑桥雅思真题请提前准备纸质版或 PDF。淘宝搜索「剑桥雅思真题 10-17」"
+    },
+    "speak": {
+      "part1_topic": "Media & News",
+      "part1_questions": "Talk about your experience with media & news. What you like, dislike, and why.",
+      "daily_task": "用观点→原因→例子→结果公式回答每个问题。Part 2：每日1个话题卡，1min准备+2min说+录音+回听改进。"
+    },
+    "write": {
+      "type": "Task2 Opinion",
+      "prompt": "Space exploration costs billions. Some say this money should be spent on Earth's problems. Do you agree?",
+      "link": "",
+      "focus": "高分范文常考题"
+    },
+    "read": {
+      "title": "剑桥雅思12 Test2 全三篇",
+      "passage": "限时：60min全真 · 重点：第二次阅读模考！\n\n请在剑桥雅思真题书上完成。做完后对答案，将错题标注类型（T/F/NG / heading / summary / matching / MCQ），生词加入扇贝。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "pose,positive,potential,precede,precise,presume,prime,priority,process,professional",
+      "note": "雅思核心词书继续 + 每天从阅读/听力中自选5个生词加入扇贝"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 23 · 全真模考：剑桥13 Test1...",
+    "listen": {
+      "video_title": "全真模考：剑桥13 Test1",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 13 Test1"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day23",
+      "part1_questions": "Part2×2：每日2个话题卡",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "accord,adjacent,aggregate,albeit,alleged,ambiguous,amend,analogy,annex,anticipate",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 24 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "语料库Ch4形容词听写",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day24",
+      "part1_questions": "Part3深度追问×3",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "appendix,arbitrary,arise,articulate,ascertain,assemble,assert,assign,attain,attribute",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 25 · 全真模考：剑桥13 Test2...",
+    "listen": {
+      "video_title": "全真模考：剑桥13 Test2",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 13 Test2"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day25",
+      "part1_questions": "全套模拟(14min连续)",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "authority,behalf,bias,breach,bulk,cease,chart,cite,clause,coherent",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 26 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "场景词专练:租房/图书馆",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day26",
+      "part1_questions": "Part2×2",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "commence,commission,commitment,commodity,compatible,compensate,compile,complement,compliance,component",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 27 · 全真模考：剑桥13 Test3...",
+    "listen": {
+      "video_title": "全真模考：剑桥13 Test3",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 13 Test3"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day27",
+      "part1_questions": "Part3:Why问题×5",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "compound,comprise,conceive,concept,concurrent,confer,confine,confirm,conflict,conform",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 28 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "语料库Ch5动词听写",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day28",
+      "part1_questions": "全套模拟",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "consent,consequent,considerable,consistent,constant,constitute,constrain,construct,consult,consume",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 29 · 全真模考：剑桥13 Test4...",
+    "listen": {
+      "video_title": "全真模考：剑桥13 Test4",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 13 Test4"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day29",
+      "part1_questions": "Part2×2",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "contact,contemplate,contemporary,context,contract,contradict,contrary,contrast,contribute,controversy",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 30 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "地图题/多选题专练",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day30",
+      "part1_questions": "Part3观点对比",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "convene,converse,convert,convince,cooperate,coordinate,core,corporate,correlate,correspond",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 31 · 全真模考：剑桥14 Test1...",
+    "listen": {
+      "video_title": "全真模考：剑桥14 Test1",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 14 Test1"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day31",
+      "part1_questions": "全套模拟",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "couple,create,credible,credit,criteria,crucial,currency,cycle,debate,decline",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 32 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "场景词专练:选课/讲座",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day32",
+      "part1_questions": "Part2×2",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "deduce,define,definite,demonstrate,denote,deny,depict,derive,design,despite",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 33 · 全真模考：剑桥14 Test2...",
+    "listen": {
+      "video_title": "全真模考：剑桥14 Test2",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 14 Test2"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day33",
+      "part1_questions": "Part3:讨论型问题",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "detect,deviate,device,devise,devote,differentiate,dimension,diminish,discrete,discriminate",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 34 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "语料库Ch3-5综合复习",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day34",
+      "part1_questions": "全套模拟",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "displace,display,dispose,distinct,distort,distribute,diverse,document,domain,domestic",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 35 · 全真模考：剑桥14 Test3...",
+    "listen": {
+      "video_title": "全真模考：剑桥14 Test3",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 14 Test3"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day35",
+      "part1_questions": "Part2×2",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "dominate,draft,drama,duration,dynamic,economic,eliminate,emerge,emphasis,empirical",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 36 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "所有错题第三次精听",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day36",
+      "part1_questions": "Part3预测型问题",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "enable,encounter,energy,enforce,enhance,enormous,ensure,entity,environment,equate",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 37 · 全真模考：剑桥14 Test4...",
+    "listen": {
+      "video_title": "全真模考：剑桥14 Test4",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 14 Test4"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day37",
+      "part1_questions": "全套模拟",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 38 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "听力高频场景词总复习",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day38",
+      "part1_questions": "Part2+Part3混合冲刺",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 39 · 全真模考：剑桥15 Test1...",
+    "listen": {
+      "video_title": "全真模考：剑桥15 Test1",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 15 Test1"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day39",
+      "part1_questions": "Part2×2",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 40 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "Section4学术词汇专练",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day40",
+      "part1_questions": "Part3:社会话题",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 41 · 全真模考：剑桥15 Test2...",
+    "listen": {
+      "video_title": "全真模考：剑桥15 Test2",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 15 Test2"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day41",
+      "part1_questions": "全套模拟",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 42 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "数字/拼写/日期/价格专练",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day42",
+      "part1_questions": "Part2×2",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 43 · 全真模考：剑桥15 Test3...",
+    "listen": {
+      "video_title": "全真模考：剑桥15 Test3",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 15 Test3"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day43",
+      "part1_questions": "Part3:教育话题",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 44 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "1.2x速听→1.0x回听(考场适应)",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day44",
+      "part1_questions": "全套模拟",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 45 · 全真模考：剑桥15 Test4...",
+    "listen": {
+      "video_title": "全真模考：剑桥15 Test4",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 15 Test4"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day45",
+      "part1_questions": "Part2×2",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 46 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "错题总复习",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day46",
+      "part1_questions": "Part3:科技话题",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 47 · 全真模考：剑桥16 Test1...",
+    "listen": {
+      "video_title": "全真模考：剑桥16 Test1",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 16 Test1"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day47",
+      "part1_questions": "全套模拟",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 48 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "考前状态调整:1.0x速度",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day48",
+      "part1_questions": "Part2×2",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 49 · 全真模考：剑桥16 Test2...",
+    "listen": {
+      "video_title": "全真模考：剑桥16 Test2",
+      "video_url": "",
+      "task": "限时30min全真模考！不做任何停顿。做完对答案标错题类型。",
+      "extra": "材料：剑桥雅思 16 Test2"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day49",
+      "part1_questions": "Part3:环境话题",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "限时60min Task1+Task2连写",
+      "prompt": "Task1: 剑桥真题对应图表。Task2: 剑桥真题对应大作文。",
+      "link": "",
+      "focus": "隔天写→隔天改。重质不重量。每周挑1篇请ChatGPT批改。"
+    },
+    "read": {
+      "title": "全真3篇连做60min",
+      "passage": "材料：对应剑桥雅思真题。严格限时20+20+20分钟。做完对答案，每篇标注5个关键同义替换。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第三阶段·冲刺期 (Day 23-50)",
+    "title": "Day 50 · 错题回听+1.2x速听...",
+    "listen": {
+      "video_title": "听力稳定在6.5+了吗？检查",
+      "video_url": "",
+      "task": "逐句精听所有错题所在句。全文1.2x速过一遍。训练快速反应。",
+      "extra": "重点攻克你的弱项题型"
+    },
+    "speak": {
+      "part1_topic": "冲刺话题 Day50",
+      "part1_questions": "全套模拟",
+      "daily_task": "每3天做一次全套模拟(Part1→Part2→Part3连续14分钟不停)。其他天练Part2话题卡×2。都录音、回听、改进。"
+    },
+    "write": {
+      "type": "对照范文修改+整理好词好句",
+      "prompt": "把昨天的作文逐句对照范文，用红笔改。重点关注：语法错误、重复用词、论据缺失。整理到错题本。",
+      "link": "",
+      "focus": "好作文是改出来的，不是写出来的。"
+    },
+    "read": {
+      "title": "错题分析+生词整理",
+      "passage": "分析昨天的错题：是定位错了？单词不认识？还是理解偏差？分类统计。"
+    },
+    "vocab": {
+      "new_words": 60,
+      "words_of_day": "复习冲刺·错词总攻",
+      "note": "雅思核心词书继续 + 每天同义替换表5组"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 51 · 错题本全面回顾",
+    "listen": {
+      "video_title": "听力只看错题，不做新题",
+      "video_url": "",
+      "task": "听力只看错题，不做新题",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "口语话题卡哑念一遍，每个默说框架",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 52 · 范文重温：最好的5篇作文",
+    "listen": {
+      "video_title": "Task2结构+句型默写",
+      "video_url": "",
+      "task": "Task2结构+句型默写",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "镜子前说3个话题，关注表情姿态",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 53 · 剑桥17 Test1 最后模考(1.0x)",
+    "listen": {
+      "video_title": "严格按考试流程走一遍",
+      "video_url": "",
+      "task": "严格按考试流程走一遍",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "全套口语模拟14min",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 54 · 听阅错题归类统计",
+    "listen": {
+      "video_title": "最常错的题型再练3道",
+      "video_url": "",
+      "task": "最常错的题型再练3道",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "Part2所有话题卡过第二遍",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 55 · 听力场景词+语料库总复习",
+    "listen": {
+      "video_title": "数学/日期/拼写/地图/流程",
+      "video_url": "",
+      "task": "数学/日期/拼写/地图/流程",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "Part3常考话题速答",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 56 · 考前48h：不碰新题",
+    "listen": {
+      "video_title": "散步、早睡、检查考场用品",
+      "video_url": "",
+      "task": "散步、早睡、检查考场用品",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "哑念一遍自我介绍+家乡话题",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 57 · 考前24h：只读范文+错题本",
+    "listen": {
+      "video_title": "保持语感但不做题",
+      "video_url": "",
+      "task": "保持语感但不做题",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "轻松聊天式口语10min",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 58 · 考试日！",
+    "listen": {
+      "video_title": "正常速度，发挥所学",
+      "video_url": "",
+      "task": "正常速度，发挥所学",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "深呼吸，你准备好了 💪",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 59 · （备用）剑桥17 Test2",
+    "listen": {
+      "video_title": "如果考试延期可用",
+      "video_url": "",
+      "task": "如果考试延期可用",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "保持节奏",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  },
+  {
+    "phase": "第四阶段·收尾期 (Day 51-60)",
+    "title": "Day 60 · （备用）剑桥17 Test3",
+    "listen": {
+      "video_title": "如果考试延期可用",
+      "video_url": "",
+      "task": "如果考试延期可用",
+      "extra": "考前阶段：只复习错题+保持耳朵适应正常语速。不做新题。"
+    },
+    "speak": {
+      "part1_topic": "收尾话题",
+      "part1_questions": "保持节奏",
+      "daily_task": "轻松练习，保持语感。不给自己压力。"
+    },
+    "write": {
+      "type": "复习",
+      "prompt": "重读自己改过的最好版本。默写结构模板。",
+      "link": "",
+      "focus": "考前不写新作文。默写开头段+Overview句式做到肌肉记忆。"
+    },
+    "read": {
+      "title": "翻看错题本",
+      "passage": "只看错题不看新题。总结自己最容易栽的题型和原因。"
+    },
+    "vocab": {
+      "new_words": 0,
+      "words_of_day": "",
+      "note": "停止新词！只看扇贝里标注的易错词。"
+    }
+  }
+]
+;
+
+</script>
+<script>
+
+const START_DATE = new Date('2026-07-05');
+const STORAGE_KEY = 'ielts_v2_checklist';
+const MOTIVATIONS = [
+  '\u{1f4aa} 听说最弱？每天坚持 75+60 分钟，两个月后你会感谢现在的自己。',
+  '\u{1f525} 阅读是你的王牌——保持 7.5 就能给写作留出空间。',
+  '\u{1f4dd} 写作不是写得越多越好。改好一篇胜过写五篇。',
+  '\u{1f3a4} 录音自己听很尴尬？那正是进步的开始。别跳过。',
+  '\u{23f0} 60 天很短，但足够从 5.5 冲到 7.0。别浪费任何一天。',
+  '\u{1f442} 耳朵需要时间打开。坚持两周你会感受到质变。',
+  '\u{1f4d6} 每天 50-60 个新词 + 复习，60 天后词汇量翻倍。',
+  '\u{1f3c6} CET-6 都过了，雅思 7.0 只差两个月的专注。加油。',
+];
+
+function loadState() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; } }
+function saveState(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }
+
+function getDayOffset() {
+  var t = new Date(); t.setHours(0,0,0,0);
+  var s = new Date(START_DATE); s.setHours(0,0,0,0);
+  return Math.max(0, Math.min(Math.floor((t-s)/(1000*60*60*24)), 59));
+}
+
+var currentDay = getDayOffset();
+
+function toggleInner(el) {
+  var cb = el.querySelector('.checkbox');
+  var label = el.querySelector('.check-label');
+  var key = el.getAttribute('data-key');
+  var state = loadState();
+  state[key] = !state[key];
+  saveState(state);
+  if (state[key]) { cb.classList.add('done'); label.classList.add('done-text'); }
+  else { cb.classList.remove('done'); label.classList.remove('done-text'); }
+  updateStats();
+}
+
+function toggleSection(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+function renderDay(dayOffset) {
+  var d = DAYS_DATA[dayOffset];
+  if (!d) return;
+  
+  document.getElementById('phaseTag').textContent = d.phase;
+  document.getElementById('dateDisplay').textContent = d.title;
+  document.getElementById('statDay').textContent = dayOffset + 1;
+
+  var state = loadState();
+  var secs = [
+    { id:'listen', icon:'\u{1f3a7}', label:'听力', time:'75min', color:'rgba(56,189,248,.15)',
+      html: (d.listen.video_url ? '<div class="material-box"><h4>\u{1f4fa} '+d.listen.video_title+'</h4><div class="video-wrap"><iframe src="'+d.listen.video_url+'" allowfullscreen loading="lazy"></iframe></div><p style="margin-top:6px">'+d.listen.task+'</p></div>' : '<div class="material-box"><h4>\u{1f4fb} '+d.listen.video_title+'</h4><p>'+d.listen.task+'</p></div>') + '<div class="material-box"><p style="font-size:0.8rem">\u{1f4a1} '+d.listen.extra+'</p></div>'
+    },
+    { id:'speak', icon:'\u{1f5e3}\u{fe0f}', label:'口语', time:'60min', color:'rgba(167,139,250,.15)',
+      html: '<div class="cue-card"><div class="card-title">Part 1 · '+d.speak.part1_topic+'</div><div class="card-prompt">'+d.speak.part1_questions+'</div></div><div class="cue-card"><div class="card-title">\u{1f399}\u{fe0f} 今日任务</div><div class="card-prompt">'+d.speak.daily_task+'</div><div class="card-hints">录音 → 回听 → 找出3个改进点 → 重说。必须要重说！</div></div>'
+    },
+    { id:'write', icon:'\u{270d}\u{fe0f}', label:'写作', time:'45min', color:'rgba(251,191,36,.15)',
+      html: '<div class="writing-prompt"><h4>'+d.write.type+'</h4><p style="margin-top:4px">'+d.write.prompt+'</p>'+(d.write.link ? '<p style="margin-top:6px"><a href="'+d.write.link+'" target="_blank">\u{1f449} 范文链接</a></p>' : '')+'<p style="margin-top:4px;font-size:0.78rem;color:var(--muted)">\u{1f3af} '+d.write.focus+'</p></div>'
+    },
+    { id:'read', icon:'\u{1f4da}', label:'阅读', time:'30min', color:'rgba(74,222,128,.15)',
+      html: '<div class="material-box"><h4>'+d.read.title+'</h4><div class="reading-box">'+d.read.passage+'</div></div>'
+    },
+    { id:'vocab', icon:'\u{1f4d6}', label:'扇贝单词', time:'30min', color:'rgba(74,222,128,.15)',
+      html: '<div class="material-box"><h4>\u{1f41a} 今日词汇</h4><p>新词：<b>'+d.vocab.new_words+' 个</b>'+(d.vocab.note ? ' · '+d.vocab.note : '')+'</p></div>'+(d.vocab.words_of_day ? '<div class="vocab-list">'+d.vocab.words_of_day.split(',').map(function(w){return '<span class="vocab-word">'+w.trim()+'</span>';}).join('')+'</div>' : '')
+    }
+  ];
+
+  var grid = '';
+  secs.forEach(function(s) {
+    var key = 'd'+dayOffset+'_'+s.id+'_done';
+    var done = state[key] || false;
+    grid += '\n    <div class="section open">\n      <div class="section-header" onclick="toggleSection(this)">\n        <div class="section-icon" style="background:'+s.color+'">'+s.icon+'</div>\n        <span class="section-title">'+s.label+'</span>\n        <span class="section-time">'+s.time+'</span>\n        <span class="section-arrow">▶</span>\n      </div>\n      <div class="section-body">\n        '+s.html+'\n        <div class="check-row" onclick="toggleInner(this)" data-key="'+key+'">\n          <div class="checkbox'+(done?' done':'')+'"></div>\n          <span class="check-label'+(done?' done-text':'')+'">✅ '+s.label+'完成</span>\n        </div>\n      </div>\n    </div>';
+  });
+  document.getElementById('daySections').innerHTML = grid;
+  updateStats();
+}
+
+function updateStats() {
+  var state = loadState();
+  var todayDone = 0, todayTotal = 5;
+  ['listen','speak','write','read','vocab'].forEach(function(s) {
+    if (state['d'+currentDay+'_'+s+'_done']) todayDone++;
+  });
+  document.getElementById('statDone').textContent = todayDone+'/'+todayTotal;
+  document.getElementById('progressFill').style.width = (todayDone/todayTotal*100) + '%';
+  
+  var streak = 0;
+  for (var d = currentDay; d >= 0; d--) {
+    var all = true;
+    for (var i = 0; i < 5; i++) {
+      var s = ['listen','speak','write','read','vocab'][i];
+      if (!state['d'+d+'_'+s+'_done']) { all = false; break; }
+    }
+    if (all) streak++; else break;
+  }
+  document.getElementById('statStreak').textContent = streak;
+  document.getElementById('motivation').textContent = todayDone === 5 ? '\u{1f389} 今天全完成了！明天继续！' : MOTIVATIONS[currentDay % MOTIVATIONS.length];
+}
+
+function changeDay(dir) { currentDay = Math.max(0, Math.min(currentDay + dir, 59)); renderDay(currentDay); }
+function goToday() { currentDay = getDayOffset(); renderDay(currentDay); }
+function resetAll() { if(confirm('确定清除所有打卡记录？')) { localStorage.removeItem(STORAGE_KEY); renderDay(currentDay); } }
+
+renderDay(currentDay);
+
+</script>
+</body>
+</html>
