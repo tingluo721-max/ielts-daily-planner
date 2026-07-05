@@ -66,6 +66,22 @@
   .btn-reset { background:transparent; border:1px solid var(--border); color:var(--muted); padding:5px 12px; border-radius:6px; cursor:pointer; font-size:0.75rem; }
   .btn-reset:hover { color:#f87171; border-color:#f87171; }
 
+
+  .vocab-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:8px; }
+  .vocab-card { background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:8px; padding:10px 12px; cursor:pointer; transition:all .2s; min-height:60px; }
+  .vocab-card:hover { border-color:var(--accent); background:rgba(56,189,248,.05); }
+  .vocab-card.flipped .vc-front { display:none; }
+  .vocab-card .vc-back { display:none; }
+  .vocab-card.flipped .vc-back { display:block; }
+  .vocab-card.mastered-card { opacity:.5; border-color:rgba(74,222,128,.2); }
+  .vc-front { display:flex; align-items:center; }
+  .vc-btn { border:none; border-radius:4px; padding:3px 10px; cursor:pointer; font-size:0.72rem; font-weight:600; }
+  .vc-yes { background:rgba(74,222,128,.2); color:var(--done); }
+  .vc-yes:hover { background:rgba(74,222,128,.35); }
+  .vc-no { background:rgba(248,113,113,.15); color:#f87171; }
+  .vc-no:hover { background:rgba(248,113,113,.3); }
+  .review-card { border-left:3px solid var(--purple); }
+
 </style>
 </head>
 <body>
@@ -91,6 +107,10 @@
   <div class="footer"><button class="btn-reset" onclick="resetAll()">重置全部打卡</button></div>
 </div>
 
+<script>
+const DETAILED_VOCAB = [[["approach", "v./n.", "接近；方法", "a new approach to solving the problem"], ["significant", "adj.", "重要的；显著的", "a significant increase in sales"], ["decline", "v./n.", "下降；拒绝", "a sharp decline in population"], ["proportion", "n.", "比例；部分", "a large proportion of students"], ["sufficient", "adj.", "足够的", "sufficient evidence to support the claim"], ["contribute", "v.", "贡献；促成", "contribute to the success of the project"], ["consequence", "n.", "后果；结果", "face the consequences of your actions"], ["nevertheless", "adv.", "然而；尽管如此", "It was difficult; nevertheless, we succeeded."], ["inevitable", "adj.", "不可避免的", "change is inevitable"], ["controversial", "adj.", "有争议的", "a controversial topic in politics"], ["deteriorate", "v.", "恶化；退化", "his health began to deteriorate"], ["predominantly", "adv.", "主要地", "a predominantly female workforce"], ["sophisticated", "adj.", "复杂的；精密的", "sophisticated technology"], ["substantial", "adj.", "大量的；实质的", "a substantial amount of money"], ["simultaneously", "adv.", "同时地", "both events happened simultaneously"]], [["conscientious", "adj.", "认真负责的", "a conscientious student"], ["exacerbate", "v.", "加剧；恶化", "exacerbate the problem"], ["ubiquitous", "adj.", "无处不在的", "smartphones are ubiquitous today"], ["paradigm", "n.", "范式；典范", "a paradigm shift in thinking"], ["prerequisite", "n.", "先决条件", "a prerequisite for the course"], ["detrimental", "adj.", "有害的", "detrimental to your health"], ["extrapolate", "v.", "推断；推知", "extrapolate from the data"], ["disproportionate", "adj.", "不成比例的", "a disproportionate impact"], ["hypothetically", "adv.", "假设地", "hypothetically speaking"], ["consequently", "adv.", "因此；所以", "He was late; consequently, he missed the meeting."], ["furthermore", "adv.", "此外；而且", "Furthermore, the cost is too high."], ["conversely", "adv.", "相反地", "Conversely, smaller firms may benefit."], ["whereas", "conj.", "然而；鉴于", "She likes coffee, whereas I prefer tea."], ["notwithstanding", "prep.", "尽管", "Notwithstanding the difficulties, we persisted."], ["ambiguous", "adj.", "模糊的；歧义的", "an ambiguous statement"]], [["comprise", "v.", "包含；由...组成", "The team comprises five members."], ["denote", "v.", "表示；意指", "The symbol denotes danger."], ["explicit", "adj.", "明确的；直言的", "explicit instructions"], ["fluctuate", "v.", "波动；起伏", "Prices fluctuate with demand."], ["hence", "adv.", "因此；从此", "Hence the need for change."], ["ideology", "n.", "意识形态", "political ideology"], ["justify", "v.", "证明...正当", "justify the decision"], ["whereby", "adv.", "凭此；借以", "a system whereby everyone benefits"], ["thereby", "adv.", "从而；因此", "He won, thereby securing his place."], ["abstract", "adj./n.", "抽象的；摘要", "an abstract concept"], ["attribute", "v./n.", "归因于；属性", "attribute success to hard work"], ["comprehensive", "adj.", "全面的；综合的", "a comprehensive review"], ["distinction", "n.", "区别；卓越", "make a clear distinction"], ["empirical", "adj.", "经验的；实证的", "empirical evidence"], ["fundamental", "adj.", "基本的；根本的", "a fundamental principle"]], [["hierarchy", "n.", "等级制度；层次", "social hierarchy"], ["implicit", "adj.", "含蓄的；隐含的", "implicit meaning"], ["mechanism", "n.", "机制；原理", "defense mechanism"], ["nonetheless", "adv.", "尽管如此", "Nonetheless, progress was made."], ["accommodation", "n.", "住宿；适应", "student accommodation"], ["assessment", "n.", "评估；评定", "risk assessment"], ["bureaucratic", "adj.", "官僚的", "bureaucratic procedures"], ["chronic", "adj.", "慢性的；长期的", "a chronic illness"], ["complement", "v./n.", "补充；互补", "They complement each other well."], ["deviation", "n.", "偏差；偏离", "standard deviation"], ["equilibrium", "n.", "平衡；均衡", "market equilibrium"], ["feasible", "adj.", "可行的", "a feasible solution"], ["genuine", "adj.", "真正的；真诚的", "genuine concern"], ["heterogeneous", "adj.", "异质的；多样的", "a heterogeneous mixture"], ["inclination", "n.", "倾向；爱好", "an inclination towards art"]], [["indigenous", "adj.", "本土的；土著的", "indigenous people"], ["infrastructure", "n.", "基础设施", "transportation infrastructure"], ["innovation", "n.", "创新；革新", "technological innovation"], ["intervention", "n.", "干预；介入", "government intervention"], ["legislation", "n.", "立法；法规", "new legislation on data privacy"], ["preliminary", "adj.", "初步的；预备的", "preliminary results"], ["qualitative", "adj.", "定性的；质的", "qualitative analysis"], ["refinement", "n.", "精炼；改进", "product refinement"], ["specification", "n.", "规格；详述", "technical specifications"], ["sustainable", "adj.", "可持续的", "sustainable development"], ["transaction", "n.", "交易；事务", "financial transaction"], ["transformation", "n.", "转变；变革", "digital transformation"], ["undergo", "v.", "经历；承受", "undergo surgery"], ["utilize", "v.", "利用；使用", "utilize resources efficiently"], ["validity", "n.", "有效性；合法性", "question the validity of the study"]], [["virtual", "adj.", "虚拟的；实质的", "virtual reality"], ["voluntary", "adj.", "自愿的", "voluntary work"], ["widespread", "adj.", "广泛的", "widespread use of the internet"], ["yield", "v./n.", "产生；产量", "yield positive results"], ["acquisition", "n.", "获得；收购", "language acquisition"], ["advocate", "v./n.", "提倡；倡导者", "advocate for change"], ["aggregate", "v./n.", "聚集；总计", "aggregate data"], ["albeit", "conj.", "虽然；即使", "a good, albeit expensive, solution"], ["allocate", "v.", "分配；拨出", "allocate resources"], ["analogy", "n.", "类比；比喻", "draw an analogy"], ["apparatus", "n.", "仪器；机构", "laboratory apparatus"], ["arbitrary", "adj.", "任意的；武断的", "an arbitrary decision"], ["attain", "v.", "达到；获得", "attain a goal"], ["coincide", "v.", "同时发生；巧合", "The events coincide."], ["collapse", "v./n.", "崩溃；倒塌", "economic collapse"]], [["commission", "n./v.", "委员会；委托", "European Commission"], ["commodity", "n.", "商品；日用品", "commodity prices"], ["compensate", "v.", "补偿；赔偿", "compensate for the loss"], ["compile", "v.", "汇编；编译", "compile a report"], ["compliance", "n.", "遵守；服从", "in compliance with the law"], ["conceive", "v.", "构思；设想", "conceive a plan"], ["concurrent", "adj.", "同时发生的", "concurrent events"], ["confine", "v.", "限制；局限于", "confined to bed"], ["consensus", "n.", "共识；一致", "reach a consensus"], ["constitute", "v.", "构成；组成", "constitute a threat"], ["constrain", "v.", "限制；约束", "constrained by budget"], ["consult", "v.", "咨询；查阅", "consult a doctor"], ["contemplate", "v.", "沉思；考虑", "contemplate the meaning of life"], ["contradict", "v.", "矛盾；反驳", "contradict yourself"], ["counterpart", "n.", "对应的人/物", "the Minister and his French counterpart"]], [["crucial", "adj.", "关键的；决定性的", "a crucial factor"], ["currency", "n.", "货币；流通", "foreign currency"], ["depict", "v.", "描绘；描述", "depict life in the 19th century"], ["derive", "v.", "源自；获得", "derive from Latin"], ["devise", "v.", "设计；发明", "devise a strategy"], ["dilemma", "n.", "困境；两难", "face a dilemma"], ["diminish", "v.", "减少；削弱", "diminish in importance"], ["discrete", "adj.", "离散的；分开的", "discrete categories"], ["displace", "v.", "取代；使移位", "displaced by technology"], ["dynamic", "adj.", "动态的；有活力的", "a dynamic economy"], ["elicit", "v.", "引出；探出", "elicit a response"], ["emerge", "v.", "出现；浮现", "new evidence emerged"], ["encounter", "v.", "遇到；遭遇", "encounter difficulties"], ["enhance", "v.", "提高；增强", "enhance performance"], ["entity", "n.", "实体；存在", "a separate legal entity"]]];
+const DETAILED_VOCAB_P2 = [[["equate", "v.", "等同", "equate money with happiness"], ["erode", "v.", "侵蚀", "erode trust"], ["estate", "n.", "财产；庄园", "real estate"], ["evident", "adj.", "明显的", "It is evident that..."], ["evolve", "v.", "进化；发展", "evolve over time"], ["exceed", "v.", "超过", "exceed expectations"], ["exploit", "v.", "利用；开发", "exploit resources"], ["facilitate", "v.", "促进；便利", "facilitate communication"], ["factor", "n.", "因素", "a key factor"], ["finite", "adj.", "有限的", "finite resources"], ["format", "n.", "格式", "digital format"], ["foundation", "n.", "基础", "lay the foundation"], ["framework", "n.", "框架", "legal framework"], ["function", "n./v.", "功能；运行", "a vital function"], ["generate", "v.", "产生", "generate income"]], [["global", "adj.", "全球的", "global economy"], ["guideline", "n.", "指导方针", "follow the guidelines"], ["highlight", "v.", "强调；突出", "highlight the importance"], ["identical", "adj.", "相同的", "identical twins"], ["illuminate", "v.", "照亮；阐明", "illuminate the issue"], ["illustrate", "v.", "说明；举例", "illustrate the point"], ["impact", "n./v.", "影响", "environmental impact"], ["implement", "v.", "实施；执行", "implement a plan"], ["impose", "v.", "强加；征税", "impose restrictions"], ["incentive", "n.", "激励；动机", "tax incentive"], ["incidence", "n.", "发生率", "incidence of disease"], ["incorporate", "v.", "并入；包含", "incorporate feedback"], ["index", "n.", "索引；指数", "stock market index"], ["induce", "v.", "引起；诱导", "induce sleep"], ["inequality", "n.", "不平等", "income inequality"]], [["inhibit", "v.", "抑制；禁止", "inhibit growth"], ["insight", "n.", "洞察力", "valuable insight"], ["integral", "adj.", "不可或缺的", "an integral part"], ["interact", "v.", "交互；互动", "interact with customers"], ["interpret", "v.", "解释；口译", "interpret the data"], ["interval", "n.", "间隔；休息", "at regular intervals"], ["intervene", "v.", "干预；介入", "intervene in the dispute"], ["intrinsic", "adj.", "内在的；本质的", "intrinsic value"], ["investigate", "v.", "调查", "investigate the case"], ["isolate", "v.", "隔离；孤立", "isolate the problem"], ["layer", "n.", "层；层次", "multiple layers"], ["levy", "v./n.", "征收；税款", "levy a tax"], ["liberal", "adj.", "自由的；开明的", "liberal arts"], ["logic", "n.", "逻辑", "follow the logic"], ["margin", "n.", "边缘；利润", "profit margin"]], [["mature", "adj.", "成熟的", "a mature attitude"], ["mediate", "v.", "调解；斡旋", "mediate a dispute"], ["mental", "adj.", "精神的；心理的", "mental health"], ["migrate", "v.", "迁移；移居", "migrate to cities"], ["minimal", "adj.", "最小的", "minimal impact"], ["modify", "v.", "修改；调整", "modify the design"], ["monopoly", "n.", "垄断", "break the monopoly"], ["motive", "n.", "动机", "ulterior motive"], ["network", "n.", "网络", "social network"], ["neutral", "adj.", "中立的", "remain neutral"], ["notion", "n.", "概念；想法", "challenge the notion"], ["objective", "n./adj.", "目标；客观的", "achieve an objective"], ["obtain", "v.", "获得", "obtain permission"], ["odd", "adj.", "奇怪的；奇数的", "odd behavior"], ["ongoing", "adj.", "持续的", "ongoing investigation"]], [["option", "n.", "选择", "a viable option"], ["orient", "v.", "定向；面向", "market-oriented"], ["outcome", "n.", "结果", "positive outcome"], ["overlap", "v./n.", "重叠", "overlap in responsibilities"], ["panel", "n.", "面板；专家组", "expert panel"], ["parameter", "n.", "参数", "within the parameters"], ["participate", "v.", "参与", "participate actively"], ["passive", "adj.", "被动的", "passive learning"], ["perceive", "v.", "感知；认为", "perceive a threat"], ["period", "n.", "时期", "transition period"], ["persist", "v.", "坚持；持续", "if symptoms persist"], ["perspective", "n.", "视角；观点", "from my perspective"], ["phase", "n.", "阶段", "the first phase"], ["phenomenon", "n.", "现象", "cultural phenomenon"], ["policy", "n.", "政策", "foreign policy"]], [["portion", "n.", "部分", "a large portion"], ["pose", "v.", "造成；摆姿势", "pose a threat"], ["positive", "adj.", "积极的；正面的", "positive feedback"], ["potential", "adj./n.", "潜在的；潜力", "potential risk"], ["precede", "v.", "先于", "the preceding chapter"], ["precise", "adj.", "精确的", "precise measurement"], ["presume", "v.", "假定；推测", "presumed innocent"], ["prime", "adj.", "主要的；最好的", "prime minister"], ["priority", "n.", "优先", "top priority"], ["process", "n./v.", "过程；处理", "decision-making process"], ["professional", "adj./n.", "专业的；专业人士", "professional advice"], ["prohibit", "v.", "禁止", "prohibit smoking"], ["project", "n./v.", "项目；投射", "research project"], ["promote", "v.", "促进；推广；晋升", "promote health"], ["proportion", "n.", "比例", "in proportion to"]], [["prospect", "n.", "前景；可能性", "career prospects"], ["protocol", "n.", "协议；礼仪", "safety protocol"], ["psychology", "n.", "心理学", "social psychology"], ["publish", "v.", "出版；发表", "publish a paper"], ["purchase", "v.", "购买", "purchase online"], ["pursue", "v.", "追求；从事", "pursue a career"], ["qualitative", "adj.", "定性的", "qualitative research"], ["quote", "v./n.", "引用；报价", "quote a source"], ["radical", "adj.", "激进的；根本的", "radical change"], ["random", "adj.", "随机的", "random sample"], ["range", "n./v.", "范围；排列", "a wide range of"], ["ratio", "n.", "比率", "teacher-student ratio"], ["rational", "adj.", "理性的", "rational decision"], ["react", "v.", "反应", "react quickly"], ["recover", "v.", "恢复", "recover from illness"]], [["refine", "v.", "精炼；改进", "refine the process"], ["regime", "n.", "政权；制度", "political regime"], ["region", "n.", "地区", "in the region of"], ["register", "v./n.", "登记；注册", "register online"], ["regulate", "v.", "调节；管理", "regulate the industry"], ["reinforce", "v.", "加强", "reinforce the message"], ["reject", "v.", "拒绝；排斥", "reject the proposal"], ["release", "v./n.", "释放；发布", "press release"], ["relevant", "adj.", "相关的", "relevant information"], ["reluctant", "adj.", "不情愿的", "reluctant to change"], ["rely", "v.", "依赖", "rely on technology"], ["remove", "v.", "移除", "remove obstacles"], ["require", "v.", "需要；要求", "require attention"], ["research", "n./v.", "研究", "conduct research"], ["resolve", "v.", "解决；决心", "resolve conflicts"]], [["resource", "n.", "资源", "natural resources"], ["respond", "v.", "回应", "respond to criticism"], ["restore", "v.", "恢复；修复", "restore order"], ["restrict", "v.", "限制", "restrict access"], ["retain", "v.", "保留；保持", "retain control"], ["reveal", "v.", "揭示；透露", "reveal the truth"], ["revenue", "n.", "收入；税收", "tax revenue"], ["reverse", "v./adj.", "逆转；相反的", "reverse the trend"], ["revolution", "n.", "革命", "industrial revolution"], ["rigid", "adj.", "僵硬的；严格的", "rigid rules"], ["role", "n.", "角色；作用", "play a key role"], ["route", "n.", "路线", "trade route"], ["scenario", "n.", "情景；方案", "worst-case scenario"], ["schedule", "n./v.", "时间表；安排", "ahead of schedule"], ["scheme", "n.", "方案；计划", "pension scheme"]], [["scope", "n.", "范围", "beyond the scope"], ["section", "n.", "部分；章节", "in this section"], ["sector", "n.", "部门；行业", "private sector"], ["secure", "adj./v.", "安全的；获得", "secure a job"], ["seek", "v.", "寻求", "seek advice"], ["select", "v.", "选择", "select an option"], ["sequence", "n.", "顺序；序列", "in chronological sequence"], ["series", "n.", "系列", "a series of events"], ["shift", "n./v.", "转变；轮班", "a shift in attitude"], ["significant", "adj.", "重要的", "significant difference"], ["similar", "adj.", "相似的", "similar to"], ["site", "n.", "地点；现场", "construction site"], ["so-called", "adj.", "所谓的", "the so-called expert"], ["sole", "adj.", "唯一的", "sole responsibility"], ["somewhat", "adv.", "有点；稍微", "somewhat different"]], [["source", "n.", "来源", "reliable source"], ["specific", "adj.", "具体的；特定的", "specific example"], ["sphere", "n.", "领域；球体", "in the public sphere"], ["stability", "n.", "稳定", "political stability"], ["statistics", "n.", "统计数据", "official statistics"], ["status", "n.", "地位；状态", "social status"], ["straightforward", "adj.", "简单明了的", "a straightforward answer"], ["strategy", "n.", "策略", "business strategy"], ["stress", "n./v.", "压力；强调", "stress the importance"], ["structure", "n./v.", "结构；组织", "organizational structure"], ["style", "n.", "风格", "learning style"], ["submit", "v.", "提交", "submit an application"], ["subsequent", "adj.", "随后的", "subsequent events"], ["subsidy", "n.", "补贴", "government subsidy"], ["substitute", "n./v.", "替代品；替代", "a healthy substitute"]], [["successor", "n.", "继任者", "a worthy successor"], ["sufficient", "adj.", "足够的", "sufficient evidence"], ["sum", "n.", "总和；金额", "a large sum of money"], ["summary", "n.", "摘要；总结", "in summary"], ["supplement", "n./v.", "补充", "dietary supplement"], ["survey", "n./v.", "调查", "conduct a survey"], ["survive", "v.", "生存；幸存", "survive the crisis"], ["suspend", "v.", "暂停；悬挂", "suspend operations"], ["sustain", "v.", "维持；支撑", "sustain growth"], ["symbol", "n.", "符号；象征", "a symbol of freedom"], ["target", "n./v.", "目标；针对", "target audience"], ["task", "n.", "任务", "a challenging task"], ["team", "n./v.", "团队", "team effort"], ["technique", "n.", "技术；技巧", "a new technique"], ["technology", "n.", "技术", "information technology"]], [["temporary", "adj.", "临时的", "temporary solution"], ["tense", "adj.", "紧张的", "tense situation"], ["terminate", "v.", "终止", "terminate the contract"], ["text", "n.", "文本；课文", "original text"], ["theme", "n.", "主题", "common theme"], ["theory", "n.", "理论", "in theory"], ["thereby", "adv.", "从而", "thereby reducing costs"], ["thesis", "n.", "论文；论点", "thesis statement"], ["topic", "n.", "话题", "hot topic"], ["trace", "v./n.", "追踪；痕迹", "trace the origin"], ["tradition", "n.", "传统", "cultural tradition"], ["transfer", "v./n.", "转移；调动", "transfer money"], ["transform", "v.", "转变", "transform the industry"], ["transit", "n.", "运输；过境", "in transit"], ["trend", "n.", "趋势", "current trend"]], [["trigger", "v./n.", "引发；触发器", "trigger a reaction"], ["ultimate", "adj.", "最终的", "the ultimate goal"], ["undergo", "v.", "经历", "undergo transformation"], ["underline", "v.", "强调；划线", "underline the importance"], ["undertake", "v.", "承担；从事", "undertake a task"], ["uniform", "adj./n.", "一致的；制服", "uniform standard"], ["unique", "adj.", "独特的", "unique opportunity"], ["utility", "n.", "公用事业；效用", "public utility"], ["valid", "adj.", "有效的；合法的", "valid passport"], ["vary", "v.", "变化", "vary from person to person"], ["vehicle", "n.", "车辆；媒介", "motor vehicle"], ["version", "n.", "版本", "latest version"], ["via", "prep.", "通过", "via email"], ["violate", "v.", "违反；侵犯", "violate the law"], ["visible", "adj.", "可见的", "clearly visible"]]];
+</script>
 <script>
 const DAYS_DATA = 
 [
@@ -1940,6 +1960,119 @@ function toggleSection(header) {
   header.parentElement.classList.toggle('open');
 }
 
+
+const VOCAB_KEY = 'ielts_vocab_state';
+const REVIEW_INTERVALS = [1, 2, 4, 7, 15, 30];
+
+function loadVocabState() { try { return JSON.parse(localStorage.getItem(VOCAB_KEY)) || {}; } catch(e) { return {}; } }
+function saveVocabState(s) { localStorage.setItem(VOCAB_KEY, JSON.stringify(s)); }
+
+function getVocabForDay(dayOffset) {
+  if (dayOffset < 8) return DETAILED_VOCAB[dayOffset] || [];
+  if (dayOffset < 22) return DETAILED_VOCAB_P2[dayOffset - 8] || [];
+  return [];
+}
+
+function getReviewWords(todayOffset) {
+  var state = loadVocabState();
+  var reviewWords = [];
+  for (var key in state) {
+    var ws = state[key];
+    if (ws.stage === 'mastered') continue;
+    var daysSinceReview = todayOffset - ws.lastReviewDay;
+    var nextInterval = REVIEW_INTERVALS[ws.stage] || 30;
+    if (daysSinceReview >= nextInterval && ws.stage < REVIEW_INTERVALS.length) {
+      reviewWords.push({word:ws.word, pos:ws.pos, cn:ws.cn, example:ws.example||'', key:key, stage:ws.stage, firstDay:ws.firstDay});
+    }
+  }
+  reviewWords.sort(function(a,b){ var aDays=todayOffset-loadVocabState()[a.key].lastReviewDay; var bDays=todayOffset-loadVocabState()[b.key].lastReviewDay; return bDays-aDays; });
+  return reviewWords;
+}
+
+function markWordKnown(wordKey, word, pos, cn, example, todayOffset) {
+  var state = loadVocabState();
+  if (state[wordKey]) { state[wordKey].stage = Math.min(state[wordKey].stage+1, REVIEW_INTERVALS.length); state[wordKey].lastReviewDay = todayOffset; }
+  else { state[wordKey] = {word:word, pos:pos, cn:cn, example:example, firstDay:todayOffset, lastReviewDay:todayOffset, stage:0}; }
+  if (state[wordKey].stage >= REVIEW_INTERVALS.length) state[wordKey].stage = 'mastered';
+  saveVocabState(state);
+}
+
+function markWordUnknown(wordKey, word, pos, cn, example, todayOffset) {
+  var state = loadVocabState();
+  state[wordKey] = {word:word, pos:pos, cn:cn, example:example, firstDay:todayOffset, lastReviewDay:todayOffset, stage:0};
+  saveVocabState(state);
+}
+
+function countMastered() { var state=loadVocabState(); var c=0; for(var k in state){if(state[k].stage==='mastered')c++;} return c; }
+function countLearning() { var state=loadVocabState(); var c=0; for(var k in state){if(state[k].stage!=='mastered')c++;} return c; }
+
+function renderVocabSection(dayOffset) {
+  var newWords = getVocabForDay(dayOffset);
+  var reviewWords = getReviewWords(dayOffset);
+  var mastered = countMastered();
+  var learning = countLearning();
+  var html = '';
+  
+  html += '<div class="material-box" style="display:flex;gap:14px;flex-wrap:wrap;align-items:center">';
+  html += '<div style="font-weight:700;font-size:0.88rem">📖 词汇库</div>';
+  html += '<div style="font-size:0.76rem;color:var(--muted)">✅ 已掌握: <b style="color:var(--done)">'+mastered+'</b></div>';
+  html += '<div style="font-size:0.76rem;color:var(--muted)">🔄 学习中: <b style="color:var(--amber)">'+learning+'</b></div>';
+  html += '<div style="font-size:0.76rem;color:var(--muted)">📋 今日新词: <b style="color:var(--accent)">'+newWords.length+'</b></div>';
+  html += '<div style="font-size:0.76rem;color:var(--muted)">⏰ 待复习: <b style="color:var(--purple)">'+reviewWords.length+'</b></div>';
+  html += '</div>';
+  
+  if (reviewWords.length > 0) {
+    html += '<div class="material-box"><h4>⏰ 艾宾浩斯复习（'+reviewWords.length+'个）</h4><p style="font-size:0.73rem;color:var(--muted);margin-bottom:8px">根据记忆曲线今天该复习这些词，点击卡片翻转查看释义</p><div class="vocab-grid">';
+    for (var i = 0; i < Math.min(reviewWords.length, 15); i++) {
+      var w = reviewWords[i];
+      var daysAgo = dayOffset - w.firstDay;
+      html += '<div class="vocab-card review-card" id="vc_'+w.key+'" onclick="flipCard(this)">';
+      html += '<div class="vc-front"><b>'+w.word+'</b><span style="font-size:0.68rem;color:var(--muted);margin-left:6px">'+w.pos+'</span><span style="font-size:0.6rem;color:var(--purple);margin-left:auto">'+daysAgo+'天前</span></div>';
+      html += '<div class="vc-back"><div>'+w.cn+'</div>';
+      if (w.example) html += '<div style="font-size:0.68rem;color:var(--muted);margin-top:3px">📎 '+w.example+'</div>';
+      html += '<div style="margin-top:6px;display:flex;gap:6px">';
+      html += '<button class="vc-btn vc-yes" onclick="event.stopPropagation();markWordKnown(\''+w.key+'\',\''+w.word+'\',\''+w.pos+'\',\''+w.cn+'\',\''+(w.example||'').replace(/'/g,"\\'")+'\','+dayOffset+');refreshVocab('+dayOffset+')">认识 ✓</button>';
+      html += '<button class="vc-btn vc-no" onclick="event.stopPropagation();markWordUnknown(\''+w.key+'\',\''+w.word+'\',\''+w.pos+'\',\''+w.cn+'\',\''+(w.example||'').replace(/'/g,"\\'")+'\','+dayOffset+');refreshVocab('+dayOffset+')">不认识 ↻</button>';
+      html += '</div></div></div>';
+    }
+    html += '</div></div>';
+  }
+  
+  if (newWords.length > 0) {
+    var state = loadVocabState();
+    html += '<div class="material-box"><h4>🆕 今日新词（'+newWords.length+'个）</h4><p style="font-size:0.73rem;color:var(--muted);margin-bottom:8px">点击卡片翻转查看释义，然后标记认识/不认识</p><div class="vocab-grid">';
+    for (var i = 0; i < newWords.length; i++) {
+      var w = newWords[i];
+      var wordKey = 'w_'+w[0].replace(/[^a-zA-Z]/g,'').toLowerCase();
+      var alreadyKnown = state[wordKey] && state[wordKey].stage === 'mastered';
+      html += '<div class="vocab-card'+(alreadyKnown?' mastered-card':'')+'" id="vcn_'+wordKey+'" onclick="flipCard(this)">';
+      html += '<div class="vc-front"><b>'+w[0]+'</b><span style="font-size:0.68rem;color:var(--muted);margin-left:6px">'+w[1]+'</span>'+(alreadyKnown?'<span style="margin-left:auto;font-size:0.7rem">✅</span>':'')+'</div>';
+      html += '<div class="vc-back"><div>'+w[2]+'</div>';
+      if (w[3]) html += '<div style="font-size:0.68rem;color:var(--muted);margin-top:3px">📎 '+w[3]+'</div>';
+      html += '<div style="margin-top:6px;display:flex;gap:6px">';
+      html += '<button class="vc-btn vc-yes" onclick="event.stopPropagation();markWordKnown(\''+wordKey+'\',\''+w[0]+'\',\''+w[1]+'\',\''+w[2]+'\',\''+(w[3]||'').replace(/'/g,"\\'")+'\','+dayOffset+');refreshVocab('+dayOffset+')">认识 ✓</button>';
+      html += '<button class="vc-btn vc-no" onclick="event.stopPropagation();markWordUnknown(\''+wordKey+'\',\''+w[0]+'\',\''+w[1]+'\',\''+w[2]+'\',\''+(w[3]||'').replace(/'/g,"\\'")+'\','+dayOffset+');refreshVocab('+dayOffset+')">不认识 ↻</button>';
+      html += '</div></div></div>';
+    }
+    html += '</div></div>';
+  }
+  
+  var d = DAYS_DATA[dayOffset];
+  if (d && d.vocab.new_words > 0) {
+    html += '<div class="material-box"><p style="font-size:0.78rem;color:var(--muted)">📋 扇贝同步：今日背 <b>'+d.vocab.new_words+'</b> 个新词。页面词汇与扇贝互补使用。</p></div>';
+  }
+  
+  return html;
+}
+
+function flipCard(card) { card.classList.toggle('flipped'); }
+
+function refreshVocab(dayOffset) {
+  var vocabEl = document.getElementById('vocab-content');
+  if (vocabEl) { vocabEl.innerHTML = renderVocabSection(dayOffset); }
+  updateStats();
+}
+
 function renderDay(dayOffset) {
   var d = DAYS_DATA[dayOffset];
   if (!d) return;
@@ -1962,8 +2095,8 @@ function renderDay(dayOffset) {
     { id:'read', icon:'\u{1f4da}', label:'阅读', time:'30min', color:'rgba(74,222,128,.15)',
       html: '<div class="material-box"><h4>'+d.read.title+'</h4><div class="reading-box">'+d.read.passage+'</div></div>'
     },
-    { id:'vocab', icon:'\u{1f4d6}', label:'扇贝单词', time:'30min', color:'rgba(74,222,128,.15)',
-      html: '<div class="material-box"><h4>\u{1f41a} 今日词汇</h4><p>新词：<b>'+d.vocab.new_words+' 个</b>'+(d.vocab.note ? ' · '+d.vocab.note : '')+'</p></div>'+(d.vocab.words_of_day ? '<div class="vocab-list">'+d.vocab.words_of_day.split(',').map(function(w){return '<span class="vocab-word">'+w.trim()+'</span>';}).join('')+'</div>' : '')
+    { id:'vocab', icon:'\u{1f4d6}', label:'词汇', time:'30min', color:'rgba(74,222,128,.15)',
+      html: '<div id="vocab-content">'+renderVocabSection(dayOffset)+'</div>'
     }
   ];
 
