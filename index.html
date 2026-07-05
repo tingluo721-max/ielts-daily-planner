@@ -100,7 +100,7 @@ const DAYS_DATA =
     "listen": {
       "video_title": "BBC 2025合集: Why smells make us feel at home",
       "video_url": "//player.bilibili.com/player.html?bvid=BV1QvFKzXEee&page=1",
-      "task": "专注抓大意，写下 5 个生词",
+      "task": "点击上方B站链接→裸听→记5个生词→回本页打卡",
       "extra": "每日三遍法：①裸听抓大意 ②开B站字幕对照 ③关字幕跟读（B站视频支持中英文字幕）"
     },
     "speak": {
@@ -130,7 +130,7 @@ const DAYS_DATA =
     "listen": {
       "video_title": "BBC 800+合集: 自选motivation话题",
       "video_url": "//player.bilibili.com/player.html?bvid=BV1bDoLYVE1k&page=1",
-      "task": "关注数字和百分比，口头英文总结30秒",
+      "task": "点击链接→听数字/百分比→口头英文总结→回本页",
       "extra": "每日三遍法：①裸听抓大意 ②开B站字幕对照 ③关字幕跟读（B站视频支持中英文字幕）"
     },
     "speak": {
@@ -160,7 +160,7 @@ const DAYS_DATA =
     "listen": {
       "video_title": "剑桥雅思听力真题精讲: Section 1",
       "video_url": "//player.bilibili.com/player.html?bvid=BV1eJ4m1M7vV&page=1",
-      "task": "逐句跟读，模仿语调",
+      "task": "点击链接→逐句暂停跟读→模仿语调→回本页",
       "extra": "每日三遍法：①裸听抓大意 ②开B站字幕对照 ③关字幕跟读（B站视频支持中英文字幕）"
     },
     "speak": {
@@ -1951,7 +1951,7 @@ function renderDay(dayOffset) {
   var state = loadState();
   var secs = [
     { id:'listen', icon:'\u{1f3a7}', label:'听力', time:'75min', color:'rgba(56,189,248,.15)',
-      html: (d.listen.video_url ? '<div class="material-box"><h4>\u{1f4fa} '+d.listen.video_title+'</h4><div class="video-wrap"><iframe src="'+d.listen.video_url+'" allowfullscreen loading="lazy"></iframe></div><p style="margin-top:6px">'+d.listen.task+'</p></div>' : '<div class="material-box"><h4>\u{1f4fb} '+d.listen.video_title+'</h4><p>'+d.listen.task+'</p></div>') + '<div class="material-box"><p style="font-size:0.8rem">\u{1f4a1} '+d.listen.extra+'</p></div>'
+      html: (function() { if (d.listen.video_url) { if (d.listen.video_url.indexOf('bilibili') !== -1) { var bv = d.listen.video_url.split('bvid=')[1]?.split('&')[0] || ''; return '<div class="material-box"><h4>\u{1f4fa} '+d.listen.video_title+'</h4><p style="margin:10px 0">\u{1f3a7} <a href="https://www.bilibili.com/video/'+bv+'" target="_blank" style="font-size:1.05rem;font-weight:600;color:#38bdf8;text-decoration:underline">\u{25b6} 点击打开B站视频（新标签页）</a></p><p style="margin-top:4px">'+d.listen.task+'</p></div>'; } return '<div class="material-box"><h4>\u{1f4fa} '+d.listen.video_title+'</h4><div class="video-wrap"><iframe src="'+d.listen.video_url+'" allowfullscreen loading="lazy"></iframe></div><p style="margin-top:6px">'+d.listen.task+'</p></div>'; } return '<div class="material-box"><h4>\u{1f4fb} '+d.listen.video_title+'</h4><p>'+d.listen.task+'</p></div>'; })() + '<div class="material-box"><p style="font-size:0.8rem">\u{1f4a1} '+d.listen.extra+'</p></div>'
     },
     { id:'speak', icon:'\u{1f5e3}\u{fe0f}', label:'口语', time:'60min', color:'rgba(167,139,250,.15)',
       html: '<div class="cue-card"><div class="card-title">Part 1 · '+d.speak.part1_topic+'</div><div class="card-prompt">'+d.speak.part1_questions+'</div></div><div class="cue-card"><div class="card-title">\u{1f399}\u{fe0f} 今日任务</div><div class="card-prompt">'+d.speak.daily_task+'</div><div class="card-hints">录音 → 回听 → 找出3个改进点 → 重说。必须要重说！</div></div>'
